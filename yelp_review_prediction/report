@@ -1,0 +1,51 @@
+Our objective is to create a prediction file from Yelp Database and find the best
+fitting classifier that will label predictions negative, positive, neutral in the most
+accurate way.
+
+Data Preprocessing
+Train3.csv contains 56000, test3.csv 14000 attributes. In our training set there
+are 38348 positive, 11897 negative and 5755 neutral classes. As it can be seen
+from the results, the dataset is very unbalanced so through our python program
+(project.py) we increased the number of samples of the neutral class and
+decreased the number of samples of the positive class. After we achieve a more
+realistic and balanced dataset, the python program starts doing text
+preprocessing. We used the nltk library to remove any stop words and convert
+anything uppercase to lowercase. We also got rid of words that start with a non
+alphabetical letter as well. We used the nltk library to tokenize the words.
+The processed files are printed out as new_train3.csv and new_text3.csv.
+Manually, we got rid of the ID column in both training data and text data.
+Additionally, we added a Class column to test data and filled it with ? for weka.
+Then through weka, we did some more data preprocessing. At the training data,
+both text and class were considered as nominal. We left Class as nominal and
+turned the Text column into string and used string to word vector function which
+turned every single word into a numerical value. We had 1350 attributes at the
+end. We did the same procedure for the text column of the test data but for the
+Class data which was shown as a string, we turned that into nominal data.
+Training data had 1009 attributes. As our attribute numbers were not equal,
+weka used InputMappedClassifier function to match the datasets when we
+wanted to run a classifier method. The function printed out the non matching
+attributes (around 300 attributes) which then led us to go and manually remove
+them from the training set to get a better accuracy. We could have used a python
+code that compares and removes the non matching attributes as well.
+
+
+Classification
+We started testing our data with the classifications methods we learned in class.
+After we tried filtered classifier with Naive Bayes, SVM, Logistic Regression and
+Random Forest which are the most recommended classification methods for
+sentiment analysis, we saw that Random Forest gave us the best fitting result
+with the highest accuracy rate among all of them. We didn’t change the default
+parameter values.
+
+
+Conclusion
+Random forest classification method reduces overfitting and was observed to be
+the best fitting method for this sentiment analysis prediction. From the
+prediction.txt file it is obvious that the positive samples are still a lot more (10560
+samples) compared to negative (3132 samples) and neutral (308) samples. The
+distribution of positive, negative and neutral samples are still unbalanced and
+similar to our test dataset.
+
+In order to run our python code, please make sure you have all the necessary
+libraries installed (panda, sklearn, nltk) and have the test3.csv, train3,csv inside
+the same folder as the project.py.
