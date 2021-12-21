@@ -1,0 +1,76 @@
+import pandas as pd
+import nltk
+nltk.download('punkt') #for word tokenization
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+from sklearn.utils import resample
+
+
+
+
+def downsample(df):
+    #we downsample positive class to 20000 samples
+    df_neutral = df[df['Class'] == 'neutral']
+    df_negative = df[df['Class'] == 'negative']
+    df_positive = df[df['Class'] == 'positive']
+
+    positive_downsample = resample(df_positive, 
+         replace = False,   
+         n_samples = 20000, 
+         random_state = 42 
+    )
+
+    #Combine downsampled positive, negative, upsampled neutral class
+    df_downsample = pd.concat([df_neutral, df_negative, positive_downsample])
+    return df_downsample
+ 
+#balancing training data for better distribution, we implemented https://elitedatascience.com/imbalanced-classes's code
+def upsample(df):
+    #we upsampled neutral class to 12000 to match the negative class
+    df_neutral = df[df['Class'] == 'neutral']
+    df_negative = df[df['Class'] == 'negative']
+    df_positive = df[df['Class'] == 'positive']
+
+    neutral_upsample = resample(df_neutral, 
+         replace = True,    
+         n_samples = 12000, 
+         random_state = 42 
+    )
+
+    #Combine positive, negative, upsampled neutral class
+    df_upsample = pd.concat([df_positive, df_negative, neutral_upsample])
+    return df_upsample
+
+def del_stopwords(text):
+    #delete stop words we got from nltk and special characters, convert word into lowercase
+   
+    stop_word = stopwords.words('english')
+    text = ' '.join(word.lower() for word in text.split() if word not in stop_word)
+
+    #append tokenized words that only has letters to the final_text array
+    tokens = nltk.word_tokenize(text)
+    final_text = []
+    for i in tokens:
+        if i.isalpha():
+            final_text.append(i) 
+    
+    final_text = " ".join(str(y) for y in final_text)
+    return final_text
+
+
+ #pre process data and split train and test. datasets are divided as x and y 
+
+df = pd.read_csv("train3.csv")
+df['Text'] = df['Text'].apply(del_stopwords)
+df = downsample(df)
+df = upsample(df)
+df = df.set_index('ID')
+df.to_csv('new_train3.csv')
+
+
+test = pd.read_csv("test3.csv")
+test['Text'] = test['Text'].apply(del_stopwords)
+test = test.set_index('ID')
+test.to_csv('new_test3.csv')
+test['CLASS'] = ''
+
